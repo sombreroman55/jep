@@ -2,3 +2,4 @@
 *.swp
 *.un
 game_data.py
+__pycache__/*
