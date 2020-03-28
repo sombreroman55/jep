@@ -1,14 +1,15 @@
 # questions.py
 # Contains the questions for the Jep rounds
 
-class Question:
-    def __init__(self, answer, difficulty):
+class Clue:
+    def __init__(self, question, answer, difficulty):
+        self.question = question
         self.answer = answer
         self.difficulty = difficulty
         self.daily_double = False
         self.answered = False
 
 class Category:
-    def __init__(self, topic, questions):
+    def __init__(self, topic, clues):
         self.topic = topic
-        self.questions = questions
+        self.clues = clues
