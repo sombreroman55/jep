@@ -2,18 +2,27 @@
 #
 # The main Jep program
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget
-from board import Board
+import time
+from PyQt5.QtGui import QPixmap 
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+from controller import Controller
 
-if __name__ == "__main__":
+def main():
     print("Welcome to Jep!")
 
     # Initialize GUI
     jep = QApplication([])
+    # splash = QLabel()
+    # splash.setPixmap(QPixmap('resources/jeopardy-logo.jpeg'))
+    # splash.show()
+    # time.sleep(3)
+    # splash.close()
     
-    board = Board()
-    sys.exit(jep.exec_())
-
     # Initialize game data
+    controller = Controller()
 
     # Run game until finish
+    sys.exit(jep.exec_())
+
+if __name__ == "__main__":
+    main()
