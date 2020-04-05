@@ -92,7 +92,7 @@ class Game:
 
     def correct_answer(self):
         self.players[self.curr_player].score += self.curr_clue_value
-        self.players[self.curr_player].last = True
+        self.set_last_player()
         if self.players[self.curr_player].score > self.players[self.winning_player].score:
             self.winning_player = self.curr_player
         self.reset_timer()

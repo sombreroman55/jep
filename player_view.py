@@ -36,6 +36,8 @@ class PlayerBarWidget(QWidget):
             self.player_widgets[i].update(self.model.players[i].score)
             if self.model.players[i].last:
                 self.player_widgets[i].setStyleSheet("background-color:#068CE9")
+            else:
+                self.player_widgets[i].setStyleSheet("background-color:#060CE9")
 
     def keyPressEvent(self, event):
         s = event.text()
