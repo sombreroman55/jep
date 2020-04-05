@@ -16,7 +16,6 @@ class View(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        print("init View UI")
         self.setWindowTitle('Jep with the Bois')
         self.central_widget = QWidget(self)
         self.layout = QVBoxLayout()
@@ -32,7 +31,8 @@ class View(QMainWindow):
         self.show()
 
     def update(self):
-        self.main_content.update()
+        new_round = self.model.check_next_round()
+        self.main_content.update(new_round)
         self.player_bar.update()
 
     def keyPressEvent(self, event):
@@ -40,7 +40,6 @@ class View(QMainWindow):
         if s.isdigit():
             if 1 <= int(s) <= len(self.model.players):
                 self.model.curr_player = int(s)-1
-                print(self.model.curr_player)
         elif s == 'k':
             self.model.correct_answer()
             self.update()
@@ -48,4 +47,4 @@ class View(QMainWindow):
             self.model.incorrect_answer()
             self.update()
         elif s == 'q':
-            QCoreApplication.quit()
+            self.model.exit_game()

@@ -18,11 +18,11 @@ class CategoryView(QWidget):
         self.initUI()
 
     def initUI(self):
-        print("init CategoryView UI")
         self.layout = QGridLayout()
         font_db = QFontDatabase()
         _id = font_db.addApplicationFont("./resources/fonts/swiss-911.ttf")
         font = QFont("Swiss911 UCm BT", 54)
+        self.category_labels = [None for i in range(len(self.model.categories))]
         for i in range(len(self.model.categories)):
             p = (0, i)
             cat_label = QLabel(self.model.categories[i])
@@ -33,6 +33,7 @@ class CategoryView(QWidget):
             cat_label.setFont(font)
             cat_label.setStyleSheet("color: white;")
             self.layout.addWidget(cat_label, *p)
+            self.category_labels[i] = cat_label
         font.setLetterSpacing(QFont.AbsoluteSpacing, 4)
         font.setPointSize(72)
         font.setBold(True)
@@ -57,19 +58,26 @@ class CategoryView(QWidget):
         self.show()
 
     def update(self):
+        for i in range(len(self.model.categories)):
+            self.category_labels[i].setText(self.model.categories[i])
         for i in range(len(self.model.clues)):
             for j in range(len(self.model.clues[i])):
                 if self.model.clues[i][j].answered:
                     self.button_widgets[i][j].setEnabled(False)
                     self.button_widgets[i][j].setStyleSheet(
                             "background-color: #808080;")
+                else:
+                    self.button_widgets[i][j].setText(
+                        "${}".format((i+1) * game.CLUE_MULT * self.model.round))
+                    self.button_widgets[i][j].setEnabled(True)
+                    self.button_widgets[i][j].setStyleSheet(
+                            "background-color: #060CE9; color: #FFCC00")
 
     def keyPressEvent(self, event):
         s = event.text()
         if s.isdigit():
             if 1 <= int(s) <= len(self.model.players):
                 self.model.curr_player = int(s)-1
-                print(self.model.curr_player)
         elif s == 'k':
             self.model.correct_answer()
             self.root.update()
@@ -77,4 +85,4 @@ class CategoryView(QWidget):
             self.model.incorrect_answer()
             self.root.update()
         elif s == 'q':
-            QCoreApplication.quit()
+            self.model.exit_game()
