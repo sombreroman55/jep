@@ -90,6 +90,9 @@ class FinalJepView(QWidget):
                 self.model.play_sound('jeopardy_theme')
             elif s == 'q':
                 self.model.exit_game()
+            elif s == '!':
+                self.model.reset_score()
+                self.root.update()
             elif s == 'w':
                 self.model.wager_mode = True
         else:

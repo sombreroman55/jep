@@ -148,6 +148,9 @@ class Board(QStackedWidget):
                 self.model.exit_game()
             elif s == 'w':
                 self.model.wager_mode = True
+            elif s == '!':
+                self.model.reset_score()
+                self.root.update()
         else:
             if s.isdigit():
                 self.model.update_wager(int(s))

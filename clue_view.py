@@ -71,6 +71,9 @@ class ClueView(QWidget):
                 self.root.update()
             elif s == 'w':
                 self.model.wager_mode = True
+            elif s == '!':
+                self.model.reset_score()
+                self.root.update()
             elif s == 'q':
                 self.model.exit_game()
         else:
@@ -84,6 +87,8 @@ class ClueView(QWidget):
             elif s == 'j':
                 self.model.incorrect_wager()
                 self.root.update()
+            elif s == 'c':
+                self.model.reset_wager()
             elif s == 'w':
                 self.model.wager_mode = False
             elif s == 'q':

@@ -50,6 +50,9 @@ class PlayerBarWidget(QWidget):
         elif s == 'j':
             self.model.incorrect_answer()
             self.root.update()
+        elif s == '!':
+            self.model.reset_score()
+            self.root.update()
         elif s == 'q':
             QCoreApplication.quit()
 

@@ -84,5 +84,8 @@ class CategoryView(QWidget):
         elif s == 'j':
             self.model.incorrect_answer()
             self.root.update()
+        elif s == '!':
+            self.model.reset_score()
+            self.root.update()
         elif s == 'q':
             self.model.exit_game()

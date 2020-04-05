@@ -46,5 +46,8 @@ class View(QMainWindow):
         elif s == 'j':
             self.model.incorrect_answer()
             self.update()
+        elif s == '!':
+            self.model.reset_score()
+            self.update()
         elif s == 'q':
             self.model.exit_game()

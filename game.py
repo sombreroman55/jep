@@ -13,7 +13,7 @@ from PyQt5.QtCore import *
 import game_data as gd
 
 CLUE_MULT = 200
-ANSWER_TIME = 30
+ANSWER_TIME = 20
 
 class Clue:
     def __init__(self, question, answer):
@@ -31,7 +31,7 @@ class Player:
 
 class Game:
     def __init__(self):
-        self.players = [Player() for i in range(4)]
+        self.players = [Player() for i in range(3)]
         self.round = 1
         self.winning_player = 0
         self.curr_player = 0
@@ -110,12 +110,15 @@ class Game:
 
     def correct_wager(self):
         self.players[self.curr_player].score += self.players[self.curr_player].wager
-        self.players[self.curr_player].last = True
+        self.set_last_player()
         self.reset_timer()
 
     def incorrect_wager(self):
         self.players[self.curr_player].score += self.players[self.curr_player].wager * -1
         self.reset_timer()
+
+    def reset_score(self):
+        self.players[self.curr_player].score = 0
 
     def reset_timer(self):
         if self.answer_timer:
