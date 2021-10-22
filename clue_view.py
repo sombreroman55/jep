@@ -70,7 +70,9 @@ class ClueView(QWidget):
                 self.model.incorrect_answer()
                 self.root.update()
             elif s == 'w':
+                print('wager on')
                 self.model.wager_mode = True
+                self.parent.setStyleSheet('border: 3px solid red')
             elif s == '!':
                 self.model.reset_score()
                 self.root.update()
@@ -90,6 +92,8 @@ class ClueView(QWidget):
             elif s == 'c':
                 self.model.reset_wager()
             elif s == 'w':
+                print('wager off')
                 self.model.wager_mode = False
+                self.parent.setStyleSheet('')
             elif s == 'q':
                 self.model.exit_game()
