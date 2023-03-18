@@ -1,9 +1,9 @@
 # view.py
 #
 # The view for Jep board
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from PyQt5.QtWidgets import QLabel, QStackedWidget
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap
 
 from category_view import CategoryView
 from clue_view import ClueView
@@ -14,7 +14,7 @@ class Board(QStackedWidget):
         super().__init__()
         self.root = root
         self.parent = parent
-        self.model = model 
+        self.model = model
         self.CAT_IND = 0
         self.CLUE_IND = 1
         self.FJ_IND = 2
@@ -34,28 +34,28 @@ class Board(QStackedWidget):
 
         self.sj_card = QLabel(self)
         self.sj_card.setPixmap(QPixmap("resources/img/jeopardy.jpg"))
-        self.sj_card.setAlignment(Qt.AlignCenter)
+        self.sj_card.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.sj_card.setScaledContents(True)
         self.sj_card.resize(self.width(), self.height())
         self.sj_card.show()
 
         self.dj_card = QLabel(self)
         self.dj_card.setPixmap(QPixmap("resources/img/double-jeopardy.png"))
-        self.dj_card.setAlignment(Qt.AlignCenter)
+        self.dj_card.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.dj_card.setScaledContents(True)
         self.dj_card.resize(self.width(), self.height())
         self.dj_card.show()
 
         self.dd_card = QLabel(self)
         self.dd_card.setPixmap(QPixmap("resources/img/daily-double.png"))
-        self.dd_card.setAlignment(Qt.AlignCenter)
+        self.dd_card.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.dd_card.setScaledContents(True)
         self.dd_card.resize(self.width(), self.height())
         self.dd_card.show()
 
         self.fj_card = QLabel(self)
         self.fj_card.setPixmap(QPixmap("resources/img/final-jeopardy.jpg"))
-        self.fj_card.setAlignment(Qt.AlignCenter)
+        self.fj_card.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.fj_card.setScaledContents(True)
         self.fj_card.resize(self.width(), self.height())
         self.fj_card.show()

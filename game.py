@@ -3,12 +3,11 @@
 # Model of the Jep game
 
 from dataclasses import dataclass
-import os
 import random
 import subprocess
 from threading import Timer
 
-from PyQt5.QtCore import *
+from PyQt5.QtCore import QCoreApplication
 
 import game_data as gd
 
@@ -31,7 +30,7 @@ class Player:
 
 class Game:
     def __init__(self):
-        self.players = [Player() for i in range(3)]
+        self.players = [Player() for _ in range(3)]
         self.round = 1
         self.winning_player = 0
         self.curr_player = 0
