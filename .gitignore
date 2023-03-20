@@ -2,4 +2,7 @@
 *.swp
 *.un
 clues.json
+game_data.py
 __pycache__/*
+*.norg
+archive
