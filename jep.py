@@ -2,26 +2,20 @@
 #
 # The main Jep program
 import sys
-
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-
+from PyQt6.QtWidgets import QApplication
 from game import Game
-from view import View
+
 
 def main():
     print("Welcome to Jep!")
 
     # Initialize GUI
-    jep = QApplication([])
-    
-    # Initialize game data
-    game = Game()
-    view = View(game)
+    jep = QApplication(sys.argv)
 
-    # Run game until finish
-    sys.exit(jep.exec_())
+    # Initialize game data
+    game = Game(jep)
+    game.play()
+
 
 if __name__ == "__main__":
     main()

@@ -1,9 +1,10 @@
 # clue_view.py
 #
 # Clue view for the stack window
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QFont, QFontDatabase
+
 
 class ClueView(QWidget):
     def __init__(self, root, parent, model):
@@ -16,7 +17,7 @@ class ClueView(QWidget):
     def initUI(self):
         self.layout = QVBoxLayout()
         font_db = QFontDatabase()
-        _id = font_db.addApplicationFont("./resources/fonts/korina-bold.ttf")
+        _ = font_db.addApplicationFont("./resources/fonts/korina-bold.ttf")
         font = QFont("Korinna", 48)
 
         self.q_label = QLabel()

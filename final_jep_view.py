@@ -1,9 +1,10 @@
 # final_jep_view.py
 #
 # Clue view for the stack window
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from PyQt6.QtWidgets import QVBoxLayout, QWidget, QLabel
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QFont, QFontDatabase
+
 
 class FinalJepView(QWidget):
     def __init__(self, root, parent, model):
@@ -125,7 +126,7 @@ class WinnerView(QWidget):
         winner_font = QFont("Korinna", 56)
 
         self.winner_label = QLabel("{} is the winner with ${}!".format(
-                                  self.model.players[self.model.winning_player].name, 
+                                  self.model.players[self.model.winning_player].name,
                                   self.model.players[self.model.winning_player].score))
         self.winner_label.setFont(winner_font)
         self.winner_label.setStyleSheet("color: white;")
@@ -139,7 +140,7 @@ class WinnerView(QWidget):
 
     def update(self):
         self.winner_label.setText("{} is the winner with ${}!".format(
-                                  self.model.players[self.model.winning_player].name, 
+                                  self.model.players[self.model.winning_player].name,
                                   self.model.players[self.model.winning_player].score))
 
     def keyPressEvent(self, event):

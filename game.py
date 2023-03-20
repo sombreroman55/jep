@@ -3,17 +3,18 @@
 # Model of the Jep game
 
 from dataclasses import dataclass
-import os
 import random
 import subprocess
+import json
 from threading import Timer
 
-from PyQt5.QtCore import *
-
-import game_data as gd
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import QApplication
+from view import View
 
 CLUE_MULT = 200
 ANSWER_TIME = 20
+
 
 class Clue:
     def __init__(self, question, answer):
@@ -22,6 +23,7 @@ class Clue:
         self.daily_double = False
         self.answered = False
 
+
 @dataclass
 class Player:
     name: str = ""
@@ -29,9 +31,10 @@ class Player:
     wager: int = 0
     last: bool = False
 
+
 class Game:
-    def __init__(self):
-        self.players = [Player() for i in range(3)]
+    def __init__(self, ctx):
+        self.players = [Player() for _ in range(3)]
         self.round = 1
         self.winning_player = 0
         self.curr_player = 0
@@ -45,22 +48,25 @@ class Game:
         self.assign_daily_double()
         self.answer_timer = None
         self.sounds = {
-                'daily_double'   : "resources/sounds/daily-double.mp3",
-                'final_jep'      : "resources/sounds/final-jep.mp3",
-                'jeopardy_theme' : "resources/sounds/jeopardy-theme.mp3",
-                'times_up'       : "resources/sounds/times-up.mp3"
+                'daily_double': "resources/sounds/daily-double.mp3",
+                'final_jep': "resources/sounds/final-jep.mp3",
+                'jeopardy_theme': "resources/sounds/jeopardy-theme.mp3",
+                'times_up': "resources/sounds/times-up.mp3"
                       }
+
+    def play(self):
+        pass
 
     def get_round_data(self, r):
         self.categories = self.data.get_cats_for_round(r)
         qdata = self.data.get_questions_for_round(r)
         adata = self.data.get_answers_for_round(r)
         if self.round < 3:
-            self.clues = [[Clue(qdata[i][j], adata[i][j]) \
-                    for j in range(6)] for i in range(5)]
+            self.clues = [[Clue(qdata[i][j], adata[i][j])
+                          for j in range(6)] for i in range(5)]
         else:
-            self.clues = [[Clue(qdata[i][j], adata[i][j]) \
-                    for j in range(1)] for i in range(1)]
+            self.clues = [[Clue(qdata[i][j], adata[i][j])
+                          for j in range(1)] for i in range(1)]
 
     def check_next_round(self):
         clear = [[x.answered for x in row] for row in self.clues]
@@ -88,7 +94,6 @@ class Game:
                 player.last = True
             else:
                 player.last = False
-
 
     def correct_answer(self):
         self.players[self.curr_player].score += self.curr_clue_value
@@ -140,10 +145,10 @@ class Game:
         assigned = 0
         used_col = -1
         while assigned < self.round:
-            rand_i = random.randint(2,4)
-            rand_j = random.randint(0,5)
+            rand_i = random.randint(2, 4)
+            rand_j = random.randint(0, 5)
             if (rand_j != used_col and
-                not self.clues[rand_i][rand_j].daily_double):
+               not self.clues[rand_i][rand_j].daily_double):
                 self.clues[rand_i][rand_j].daily_double = True
                 used_col = rand_j
                 assigned += 1

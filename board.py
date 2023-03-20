@@ -1,13 +1,14 @@
 # view.py
 #
 # The view for Jep board
-from PyQt5.QtWidgets import QStackedWidget, QLabel
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap
+from PyQt6.QtWidgets import QStackedWidget, QLabel
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPixmap
 
 from category_view import CategoryView
 from clue_view import ClueView
 from final_jep_view import FinalJepView, WinnerView
+
 
 class Board(QStackedWidget):
     def __init__(self, root, parent, model):
@@ -81,7 +82,7 @@ class Board(QStackedWidget):
         self.model.curr_clue_row = i
         self.model.curr_clue_col = j
         self.model.curr_clue_value = \
-                (self.model.curr_clue_row+1) * self.model.base_clue_value
+            (self.model.curr_clue_row+1) * self.model.base_clue_value
         self.clue_view.populate_clue(self.model.clues[i][j].question,
                                      self.model.clues[i][j].answer)
         if self.model.clues[i][j].daily_double:

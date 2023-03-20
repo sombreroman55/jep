@@ -2,12 +2,11 @@
 #
 # Category view for the stack window
 from functools import partial
-
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-
+from PyQt6.QtWidgets import QWidget, QGridLayout, QSizePolicy, QLabel
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QFont, QFontDatabase, QPushButton
 import game
+
 
 class CategoryView(QWidget):
     def __init__(self, root, parent, model):
@@ -20,13 +19,13 @@ class CategoryView(QWidget):
     def initUI(self):
         self.layout = QGridLayout()
         font_db = QFontDatabase()
-        _id = font_db.addApplicationFont("./resources/fonts/swiss-911.ttf")
+        _ = font_db.addApplicationFont("./resources/fonts/swiss-911.ttf")
         font = QFont("Swiss911 UCm BT", 54)
         self.category_labels = [None for i in range(len(self.model.categories))]
         for i in range(len(self.model.categories)):
             p = (0, i)
             cat_label = QLabel(self.model.categories[i])
-            cat_label.setSizePolicy(QSizePolicy.Expanding, 
+            cat_label.setSizePolicy(QSizePolicy.Expanding,
                                     QSizePolicy.Expanding)
             cat_label.setAlignment(Qt.AlignCenter)
             cat_label.setWordWrap(True)
@@ -37,9 +36,9 @@ class CategoryView(QWidget):
         font.setLetterSpacing(QFont.AbsoluteSpacing, 4)
         font.setPointSize(72)
         font.setBold(True)
-        self.button_widgets = [[None 
-                                for j in range(len(self.model.clues[i]))]
-                                for i in range(len(self.model.clues))]
+        self.button_widgets = [[None
+                               for j in range(len(self.model.clues[i]))]
+                               for i in range(len(self.model.clues))]
         for i in range(len(self.model.clues)):
             for j in range(len(self.model.clues[i])):
                 p = (i+1, j)
@@ -49,7 +48,7 @@ class CategoryView(QWidget):
                 button.setStyleSheet("color: #FFCC00;")
                 button.clicked.connect(
                         partial(self.parent.show_clue, i, j))
-                button.setSizePolicy(QSizePolicy.Expanding, 
+                button.setSizePolicy(QSizePolicy.Expanding,
                                      QSizePolicy.Expanding)
                 self.layout.addWidget(button, *p)
                 self.button_widgets[i][j] = button
