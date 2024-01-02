@@ -5,6 +5,10 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
+# TODO: Fix * imports
+# TODO: Migrate to PyQt6
+# TODO: Update event handlers to use buttons for score adjustment
+
 class ClueView(QWidget):
     def __init__(self, root, parent, model):
         super().__init__()
@@ -16,7 +20,7 @@ class ClueView(QWidget):
     def initUI(self):
         self.layout = QVBoxLayout()
         font_db = QFontDatabase()
-        _id = font_db.addApplicationFont("./resources/fonts/korina-bold.ttf")
+        _ = font_db.addApplicationFont("./resources/fonts/korina-bold.ttf")
         font = QFont("Korinna", 48)
 
         self.q_label = QLabel()

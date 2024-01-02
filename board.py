@@ -68,7 +68,7 @@ class Board(QStackedWidget):
         self.game_state.curr_clue_row = i
         self.game_state.curr_clue_col = j
         self.game_state.curr_clue_value = \
-                (self.game_state.curr_clue_row+1) * self.game_state.base_clue_value
+            (self.game_state.curr_clue_row+1) * self.game_state.base_clue_value
         self.clue_view.populate_clue(self.game_state.clues[i][j].question,
                                      self.game_state.clues[i][j].answer)
         if self.game_state.clues[i][j].daily_double:

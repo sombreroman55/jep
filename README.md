@@ -15,7 +15,7 @@ The game controls are detailed below.
 
 ## Dependencies
 This project depends heavily on the PyQt5 framework.
-In order to play the sounds, the mpv media player must 
+In order to play the sounds, the mpv media player must
 be installed on your system as well.
 
 ## Controls

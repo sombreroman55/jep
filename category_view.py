@@ -19,7 +19,7 @@ class CategoryView(QWidget):
     def initUI(self):
         self.layout = QGridLayout()
         font_db = QFontDatabase()
-        _id = font_db.addApplicationFont("./resources/fonts/swiss-911.ttf")
+        _ = font_db.addApplicationFont("./resources/fonts/swiss-911.ttf")
         font = QFont("Swiss911 UCm BT", 54)
         self.category_labels = [None for i in range(len(self.model.categories))]
         for i in range(len(self.model.categories)):
@@ -38,7 +38,7 @@ class CategoryView(QWidget):
         font.setBold(True)
         self.button_widgets = [[None
                                 for j in range(len(self.model.clues[i]))]
-                                for i in range(len(self.model.clues))]
+                               for i in range(len(self.model.clues))]
         for i in range(len(self.model.clues)):
             for j in range(len(self.model.clues[i])):
                 p = (i+1, j)
