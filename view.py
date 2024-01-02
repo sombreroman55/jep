@@ -2,12 +2,11 @@
 #
 # The root view window that is parent to all other widgets
 
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QWidget, QMainWindow, QVBoxLayout
 from board import Board
 from player_view import PlayerBarWidget
+
 
 class View(QMainWindow):
     def __init__(self, model):
@@ -36,18 +35,7 @@ class View(QMainWindow):
         self.player_bar.update()
 
     def keyPressEvent(self, event):
-        s = event.text()
-        if s.isdigit():
-            if 1 <= int(s) <= len(self.model.players):
-                self.model.curr_player = int(s)-1
-        elif s == 'k':
-            self.model.correct_answer()
-            self.update()
-        elif s == 'j':
-            self.model.incorrect_answer()
-            self.update()
-        elif s == '!':
-            self.model.reset_score()
-            self.update()
-        elif s == 'q':
+        s = event.key()
+        if s == Qt.Key.Key_Q.value:
             self.model.exit_game()
+        self.update()

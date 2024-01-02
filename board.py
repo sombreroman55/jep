@@ -1,20 +1,22 @@
 # view.py
 #
 # The view for Jep board
-from PyQt5.QtWidgets import QLabel, QStackedWidget
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap
+
+from PyQt6.QtWidgets import QLabel, QStackedWidget
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPixmap
 
 from category_view import CategoryView
 from clue_view import ClueView
 from final_jep_view import FinalJepView, WinnerView
 
+
 class Board(QStackedWidget):
-    def __init__(self, root, parent, model):
+    def __init__(self, root, parent, game_state):
         super().__init__()
         self.root = root
         self.parent = parent
-        self.model = model
+        self.game_state = game_state
         self.CAT_IND = 0
         self.CLUE_IND = 1
         self.FJ_IND = 2
@@ -27,38 +29,15 @@ class Board(QStackedWidget):
         self.initUI()
 
     def initUI(self):
-        self.category_view = CategoryView(self.root, self, self.model)
-        self.clue_view = ClueView(self.root, self, self.model)
-        self.final_jep_view = FinalJepView(self.root, self, self.model)
-        self.winner_view = WinnerView(self.root, self, self.model)
+        self.category_view = CategoryView(self.root, self, self.game_state)
+        self.clue_view = ClueView(self.root, self, self.game_state)
+        self.final_jep_view = FinalJepView(self.root, self, self.game_state)
+        self.winner_view = WinnerView(self.root, self, self.game_state)
 
-        self.sj_card = QLabel(self)
-        self.sj_card.setPixmap(QPixmap("resources/img/jeopardy.jpg"))
-        self.sj_card.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.sj_card.setScaledContents(True)
-        self.sj_card.resize(self.width(), self.height())
-        self.sj_card.show()
-
-        self.dj_card = QLabel(self)
-        self.dj_card.setPixmap(QPixmap("resources/img/double-jeopardy.png"))
-        self.dj_card.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.dj_card.setScaledContents(True)
-        self.dj_card.resize(self.width(), self.height())
-        self.dj_card.show()
-
-        self.dd_card = QLabel(self)
-        self.dd_card.setPixmap(QPixmap("resources/img/daily-double.png"))
-        self.dd_card.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.dd_card.setScaledContents(True)
-        self.dd_card.resize(self.width(), self.height())
-        self.dd_card.show()
-
-        self.fj_card = QLabel(self)
-        self.fj_card.setPixmap(QPixmap("resources/img/final-jeopardy.jpg"))
-        self.fj_card.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.fj_card.setScaledContents(True)
-        self.fj_card.resize(self.width(), self.height())
-        self.fj_card.show()
+        self.sj_card = self.init_image_card("resources/img/jeopardy.jpg")
+        self.dj_card = self.init_image_card("resources/img/double-jeopardy.jpg")
+        self.dd_card = self.init_image_card("resources/img/daily-double.jpg")
+        self.fd_card = self.init_image_card("resources/img/final-jeopardy.jpg")
 
         self.addWidget(self.category_view)
         self.addWidget(self.clue_view)
@@ -73,19 +52,27 @@ class Board(QStackedWidget):
         self.show_categories()
         self.show()
 
+    def init_image_card(self, image_path):
+        image_card = QLabel(self)
+        image_card.setPixmap(QPixmap("resources/img/jeopardy.jpg"))
+        image_card.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        image_card.setScaledContents(True)
+        image_card.resize(self.width(), self.height())
+        return image_card
+
     def show_categories(self):
         self.curr_index = self.CAT_IND
         self.setCurrentIndex(self.curr_index)
 
     def show_clue(self, i, j):
-        self.model.curr_clue_row = i
-        self.model.curr_clue_col = j
-        self.model.curr_clue_value = \
-                (self.model.curr_clue_row+1) * self.model.base_clue_value
-        self.clue_view.populate_clue(self.model.clues[i][j].question,
-                                     self.model.clues[i][j].answer)
-        if self.model.clues[i][j].daily_double:
-            self.model.play_sound('daily_double')
+        self.game_state.curr_clue_row = i
+        self.game_state.curr_clue_col = j
+        self.game_state.curr_clue_value = \
+                (self.game_state.curr_clue_row+1) * self.game_state.base_clue_value
+        self.clue_view.populate_clue(self.game_state.clues[i][j].question,
+                                     self.game_state.clues[i][j].answer)
+        if self.game_state.clues[i][j].daily_double:
+            self.game_state.play_sound('daily_double')
             self.show_card(self.DD_CARD)
         else:
             self.curr_index = self.CLUE_IND
@@ -112,11 +99,11 @@ class Board(QStackedWidget):
 
     def update(self, new_round):
         if new_round:
-            if self.model.round == 1:
+            if self.game_state.round == 1:
                 self.show_card(self.SJ_CARD)
-            elif self.model.round == 2:
+            elif self.game_state.round == 2:
                 self.show_card(self.DJ_CARD)
-            elif self.model.round == 3:
+            elif self.game_state.round == 3:
                 self.show_card(self.FJ_CARD)
         self.category_view.update()
         self.clue_view.update()
@@ -125,15 +112,15 @@ class Board(QStackedWidget):
 
     def keyPressEvent(self, event):
         s = event.text()
-        if not self.model.wager_mode:
+        if not self.game_state.wager_mode:
             if s.isdigit():
-                if 1 <= int(s) <= len(self.model.players):
-                    self.model.curr_player = int(s)-1
+                if 1 <= int(s) <= len(self.game_state.players):
+                    self.game_state.curr_player = int(s)-1
             elif s == 'k':
-                self.model.correct_answer()
+                self.game_state.correct_answer()
                 self.root.update()
             elif s == 'j':
-                self.model.incorrect_answer()
+                self.game_state.incorrect_answer()
                 self.root.update()
             elif s == 'n':
                 if self.curr_index == self.SJ_CARD or self.curr_index == self.DJ_CARD:
@@ -142,23 +129,23 @@ class Board(QStackedWidget):
                     self.curr_index = self.CLUE_IND
                 elif self.curr_index == self.FJ_CARD:
                     self.show_final_jep()
-                    self.model.play_sound('final_jep')
+                    self.game_state.play_sound('final_jep')
                 self.setCurrentIndex(self.curr_index)
             elif s == 'q':
-                self.model.exit_game()
+                self.game_state.exit_game()
             elif s == 'w':
-                self.model.wager_mode = True
+                self.game_state.wager_mode = True
             elif s == '!':
-                self.model.reset_score()
+                self.game_state.reset_score()
                 self.root.update()
         else:
             if s.isdigit():
-                self.model.update_wager(int(s))
+                self.game_state.update_wager(int(s))
             elif s == 'k':
-                self.model.correct_wager()
+                self.game_state.correct_wager()
                 self.root.update()
             elif s == 'j':
-                self.model.incorrect_wager()
+                self.game_state.incorrect_wager()
                 self.root.update()
             elif s == 'n':
                 if self.curr_index == self.SJ_CARD or self.curr_index == self.DJ_CARD:
@@ -167,11 +154,11 @@ class Board(QStackedWidget):
                     self.curr_index = self.CLUE_IND
                 elif self.curr_index == self.FJ_CARD:
                     self.show_final_jep()
-                    self.model.play_sound('final_jep')
+                    self.game_state.play_sound('final_jep')
                 self.setCurrentIndex(self.curr_index)
             elif s == 'q':
-                self.model.exit_game()
+                self.game_state.exit_game()
             elif s == 'c':
-                self.model.reset_wager()
+                self.game_state.reset_wager()
             elif s == 'w':
-                self.model.wager_mode = False
+                self.game_state.wager_mode = False

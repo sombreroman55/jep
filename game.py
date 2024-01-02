@@ -1,18 +1,15 @@
 # game.py
 #
-# Model of the Jep game
+# Game state data and functions for Jep
 
 from dataclasses import dataclass
+import sys
+import json
 import random
 import subprocess
 from threading import Timer
-
 from PyQt5.QtCore import QCoreApplication
 
-import game_data as gd
-
-CLUE_MULT = 200
-ANSWER_TIME = 20
 
 class Clue:
     def __init__(self, question, answer):
@@ -21,34 +18,51 @@ class Clue:
         self.daily_double = False
         self.answered = False
 
+
 @dataclass
 class Player:
     name: str = ""
     score: int = 0
-    wager: int = 0
-    last: bool = False
 
-class Game:
+
+class Jep:
     def __init__(self):
+        self.load_clues()
         self.players = [Player() for _ in range(3)]
         self.round = 1
-        self.winning_player = 0
         self.curr_player = 0
         self.curr_clue_row = 0
         self.curr_clue_col = 0
         self.wager_mode = False
-        self.base_clue_value = CLUE_MULT * self.round
+        self.base_clue_value = 200 * self.round
         self.curr_clue_value = self.curr_clue_row * self.base_clue_value
-        self.data = gd.GameData()
-        self.get_round_data(self.round)
+        self.initialize_clues(self.round)
         self.assign_daily_double()
         self.answer_timer = None
         self.sounds = {
-                'daily_double'   : "resources/sounds/daily-double.mp3",
-                'final_jep'      : "resources/sounds/final-jep.mp3",
-                'jeopardy_theme' : "resources/sounds/jeopardy-theme.mp3",
-                'times_up'       : "resources/sounds/times-up.mp3"
+                'daily_double': "resources/sounds/daily-double.mp3",
+                'final_jep': "resources/sounds/final-jep.mp3",
+                'jeopardy_theme': "resources/sounds/jeopardy-theme.mp3",
+                'times_up': "resources/sounds/times-up.mp3"
                       }
+
+    def play(self):
+        # TODO: Initialize UI and own it
+        pass
+
+    def load_clues(self):
+        with open('clues.json') as cluefile:
+            self.clues = json.load(cluefile)
+            print(self.clues)
+            sys.exit(1)
+
+    def create_UI(self):
+        # TODO: Create UI elements
+        pass
+
+    def update_state(self):
+        # TODO: Update game state and UI elements
+        pass
 
     def get_round_data(self, r):
         self.categories = self.data.get_cats_for_round(r)
@@ -69,7 +83,7 @@ class Game:
                 return
             self.get_round_data(self.round)
             if self.round < 3:
-                self.base_clue_value = CLUE_MULT * self.round
+                self.base_clue_value = 200 * self.round
                 self.assign_daily_double()
             return True
         return False
@@ -88,42 +102,28 @@ class Game:
             else:
                 player.last = False
 
-
-    def correct_answer(self):
-        self.players[self.curr_player].score += self.curr_clue_value
+    def correct_answer(self, player, value):
+        self.players[player].score += value
         self.set_last_player()
-        if self.players[self.curr_player].score > self.players[self.winning_player].score:
-            self.winning_player = self.curr_player
+        self.clear_timer()
+
+    def incorrect_answer(self, player, value):
+        self.players[player].score -= value
         self.reset_timer()
 
-    def incorrect_answer(self):
-        self.players[self.curr_player].score += self.curr_clue_value * -1
-        self.reset_timer()
-
-    def reset_wager(self):
+    def reset_wager(self, player):
         self.players[self.curr_player].wager = 0
 
     def update_wager(self, digit):
         self.players[self.curr_player].wager *= 10
         self.players[self.curr_player].wager += digit
 
-    def correct_wager(self):
-        self.players[self.curr_player].score += self.players[self.curr_player].wager
-        self.set_last_player()
-        self.reset_timer()
-
-    def incorrect_wager(self):
-        self.players[self.curr_player].score += self.players[self.curr_player].wager * -1
-        self.reset_timer()
-
-    def reset_score(self):
-        self.players[self.curr_player].score = 0
+    def reset_score(self, player):
+        self.players[player].score = 0
 
     def reset_timer(self):
-        if self.answer_timer:
-            self.answer_timer.cancel()
-        self.answer_timer = None
-        self.answer_timer = Timer(ANSWER_TIME, self.play_sound, args=['times_up'])
+        self.clear_timer()
+        self.answer_timer = Timer(20, self.play_sound, args=['times_up'])
         self.answer_timer.daemon = True
         self.answer_timer.start()
 
@@ -139,10 +139,10 @@ class Game:
         assigned = 0
         used_col = -1
         while assigned < self.round:
-            rand_i = random.randint(2,4)
-            rand_j = random.randint(0,5)
+            rand_i = random.randint(2, 4)
+            rand_j = random.randint(0, 5)
             if (rand_j != used_col and
-                not self.clues[rand_i][rand_j].daily_double):
+               not self.clues[rand_i][rand_j].daily_double):
                 self.clues[rand_i][rand_j].daily_double = True
                 used_col = rand_j
                 assigned += 1

@@ -2,12 +2,11 @@
 #
 # Category view for the stack window
 from functools import partial
-
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-
+from PyQt6.QtWidgets import QWidget, QLabel, QPushButton
+from PyQt6.QtCore import Qt, QGridLayout
+from PyQt6.QtGui import QFont, QFontDatabase
 import game
+
 
 class CategoryView(QWidget):
     def __init__(self, root, parent, model):
@@ -26,8 +25,8 @@ class CategoryView(QWidget):
         for i in range(len(self.model.categories)):
             p = (0, i)
             cat_label = QLabel(self.model.categories[i])
-            cat_label.setSizePolicy(QSizePolicy.Expanding, 
-                                    QSizePolicy.Expanding)
+            cat_label.setSizePolicy(Qt.QSizePolicy.Expanding,
+                                    Qt.QSizePolicy.Expanding)
             cat_label.setAlignment(Qt.AlignCenter)
             cat_label.setWordWrap(True)
             cat_label.setFont(font)
@@ -37,20 +36,20 @@ class CategoryView(QWidget):
         font.setLetterSpacing(QFont.AbsoluteSpacing, 4)
         font.setPointSize(72)
         font.setBold(True)
-        self.button_widgets = [[None 
+        self.button_widgets = [[None
                                 for j in range(len(self.model.clues[i]))]
                                 for i in range(len(self.model.clues))]
         for i in range(len(self.model.clues)):
             for j in range(len(self.model.clues[i])):
                 p = (i+1, j)
                 button = QPushButton(
-                    "${}".format((i+1) * game.CLUE_MULT * self.model.round))
+                    f"${(i+1) * game.CLUE_MULT * self.model.round}")
                 button.setFont(font)
                 button.setStyleSheet("color: #FFCC00;")
                 button.clicked.connect(
                         partial(self.parent.show_clue, i, j))
-                button.setSizePolicy(QSizePolicy.Expanding, 
-                                     QSizePolicy.Expanding)
+                button.setSizePolicy(Qt.QSizePolicy.Expanding,
+                                     Qt.QSizePolicy.Expanding)
                 self.layout.addWidget(button, *p)
                 self.button_widgets[i][j] = button
         self.setStyleSheet("background-color:#060CE9;")
