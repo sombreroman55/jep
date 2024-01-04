@@ -9,9 +9,9 @@ from game import Jep
 
 def main():
     print("Welcome to Jep!")
-    app = QApplication([])
-
+    app = QApplication(sys.argv)
     jep = Jep()
+    jep.play()
     sys.exit(app.exec())
 
 

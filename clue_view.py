@@ -1,13 +1,12 @@
 # clue_view.py
 #
 # Clue view for the stack window
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QFontDatabase, QFont
 
-# TODO: Fix * imports
-# TODO: Migrate to PyQt6
 # TODO: Update event handlers to use buttons for score adjustment
+
 
 class ClueView(QWidget):
     def __init__(self, root, parent, model):
@@ -20,7 +19,7 @@ class ClueView(QWidget):
     def initUI(self):
         self.layout = QVBoxLayout()
         font_db = QFontDatabase()
-        _ = font_db.addApplicationFont("./resources/fonts/korina-bold.ttf")
+        font_db.addApplicationFont("./resources/fonts/korina-bold.ttf")
         font = QFont("Korinna", 48)
 
         self.q_label = QLabel()

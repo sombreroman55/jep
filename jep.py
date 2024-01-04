@@ -7,8 +7,9 @@ import sys
 import json
 import random
 import subprocess
+from view import View
 from threading import Timer
-from PyQt6.QtCore import QCoreApplication
+from PyQt6.QtWidgets import QApplication
 
 # TODO: Add/remove players dynamically
 
@@ -64,18 +65,13 @@ class Jep:
                       }
 
     def play(self):
-        # TODO: Initialize UI and own it
-        pass
+        self.view = View()
 
     def load_clues(self):
         with open('clues.json') as cluefile:
             self.clues = json.load(cluefile)
             print(self.clues)
             sys.exit(1)
-
-    def create_UI(self):
-        # TODO: Create UI elements
-        pass
 
     def update_state(self):
         # TODO: Update game state and UI elements
@@ -166,4 +162,4 @@ class Jep:
 
     def exit_game(self):
         self.clear_timer()
-        QCoreApplication.quit()
+        QApplication.quit()
