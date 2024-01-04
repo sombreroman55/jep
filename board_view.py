@@ -2,54 +2,56 @@
 #
 # Category view for the stack window
 from functools import partial
-from PyQt6.QtWidgets import QWidget, QLabel, QPushButton, QGridLayout
+from PyQt6.QtWidgets import (
+        QWidget,
+        QLabel,
+        QPushButton,
+        QGridLayout,
+        QSizePolicy
+    )
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QFont, QFontDatabase
+from PyQt6.QtGui import QFont
 import game
 
 
 class BoardView(QWidget):
-    def __init__(self, root, parent, model):
+    def __init__(self, controller):
         super().__init__()
-        self.root = root
-        self.parent = parent
-        self.model = model
+        self.controller = controller
         self.initUI()
 
     def initUI(self):
         self.layout = QGridLayout()
-        font_db = QFontDatabase()
-        _ = font_db.addApplicationFont("./resources/fonts/swiss-911.ttf")
-        font = QFont("Swiss911 UCm BT", 54)
-        self.category_labels = [None for i in range(len(self.model.categories))]
-        for i in range(len(self.model.categories)):
+        font = self.controller.get_font("swiss911", 54)
+        round = self.controller.get_round_data()
+        self.category_labels = [None] * len(round.categories)
+        for i, category in enumerate(round.categories):
             p = (0, i)
-            cat_label = QLabel(self.model.categories[i])
-            cat_label.setSizePolicy(Qt.QSizePolicy.Expanding,
-                                    Qt.QSizePolicy.Expanding)
-            cat_label.setAlignment(Qt.AlignCenter)
+            cat_label = QLabel(category.title)
+            cat_label.setSizePolicy(QSizePolicy.Policy.Expanding,
+                                    QSizePolicy.Policy.Expanding)
+            cat_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             cat_label.setWordWrap(True)
             cat_label.setFont(font)
             cat_label.setStyleSheet("color: white;")
             self.layout.addWidget(cat_label, *p)
             self.category_labels[i] = cat_label
-        font.setLetterSpacing(QFont.AbsoluteSpacing, 4)
+        font.setLetterSpacing(QFont.SpacingType.AbsoluteSpacing, 4)
         font.setPointSize(72)
         font.setBold(True)
         self.button_widgets = [[None
-                                for j in range(len(self.model.clues[i]))]
-                               for i in range(len(self.model.clues))]
-        for i in range(len(self.model.clues)):
-            for j in range(len(self.model.clues[i])):
+                                for j in range(len(round.categories[i].clues))]
+                               for i in range(len(round.categories))]
+        for i, category in enumerate(round.categories):
+            for j, clue in enumerate(category.clues):
                 p = (i+1, j)
-                button = QPushButton(
-                    f"${(i+1) * game.CLUE_MULT * self.model.round}")
+                button = QPushButton(f"${clue.value}")
                 button.setFont(font)
                 button.setStyleSheet("color: #FFCC00;")
-                button.clicked.connect(
-                        partial(self.parent.show_clue, i, j))
-                button.setSizePolicy(Qt.QSizePolicy.Expanding,
-                                     Qt.QSizePolicy.Expanding)
+                # button.clicked.connect(
+                        # partial(self.parent.show_clue, i, j))
+                button.setSizePolicy(QSizePolicy.Policy.Expanding,
+                                     QSizePolicy.Policy.Expanding)
                 self.layout.addWidget(button, *p)
                 self.button_widgets[i][j] = button
         self.setStyleSheet("background-color:#060CE9;")
@@ -57,34 +59,17 @@ class BoardView(QWidget):
         self.show()
 
     def update(self):
-        for i in range(len(self.model.categories)):
-            self.category_labels[i].setText(self.model.categories[i])
-        for i in range(len(self.model.clues)):
-            for j in range(len(self.model.clues[i])):
-                if self.model.clues[i][j].answered:
+        round = self.controller.get_round_data()
+        for i, category in enumerate(round.categories):
+            self.category_labels[i].setText(category.title)
+        for i, category in enumerate(round.categories):
+            for j, clue in enumerate(category.clues):
+                if clue.answered:
                     self.button_widgets[i][j].setEnabled(False)
                     self.button_widgets[i][j].setStyleSheet(
                             "background-color: #808080;")
                 else:
-                    self.button_widgets[i][j].setText(
-                        "${}".format((i+1) * game.CLUE_MULT * self.model.round))
+                    self.button_widgets[i][j].setText(f"${clue.value}")
                     self.button_widgets[i][j].setEnabled(True)
                     self.button_widgets[i][j].setStyleSheet(
                             "background-color: #060CE9; color: #FFCC00")
-
-    def keyPressEvent(self, event):
-        s = event.text()
-        if s.isdigit():
-            if 1 <= int(s) <= len(self.model.players):
-                self.model.curr_player = int(s)-1
-        elif s == 'k':
-            self.model.correct_answer()
-            self.root.update()
-        elif s == 'j':
-            self.model.incorrect_answer()
-            self.root.update()
-        elif s == '!':
-            self.model.reset_score()
-            self.root.update()
-        elif s == 'q':
-            self.model.exit_game()

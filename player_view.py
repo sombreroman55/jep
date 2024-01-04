@@ -13,7 +13,6 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt
 
 
-# TODO: Add +/- buttons to adjust score with mouse
 # TODO: Hook those buttons up to handlers to adjust score
 # TODO: Add a wager mode UI to the player currently wagering and the amount
 # TODO: Adjust the score handlers to use the wager amount in DD situations
@@ -26,9 +25,9 @@ class PlayerBarWidget(QWidget):
 
     def initUI(self):
         self.layout = QHBoxLayout()
-        self.player_widgets = list()
-        for i in range(len(self.model.players)):
-            player = self.model.players[i]
+        self.player_widgets = []
+        players = self.controller.get_players()
+        for i, player in enumerate(players):
             pw = PlayerWidget(player)
             pw.name_label.editingFinished.connect(
                         partial(self.update_name, i))
@@ -42,12 +41,13 @@ class PlayerBarWidget(QWidget):
                 player, self.player_widgets[player].name_label.text())
 
     def update(self):
-        for i in range(len(self.player_widgets)):
-            self.player_widgets[i].update(self.model.players[i].score)
-            if self.model.players[i].last:
-                self.player_widgets[i].setStyleSheet("background-color:#068CE9")
+        for widget in self.player_widgets:
+            # widget.update(self.model.players[i].score)
+            widget.update(0)
+            if widget.last:
+                widget.setStyleSheet("background-color:#068CE9")
             else:
-                self.player_widgets[i].setStyleSheet("background-color:#060CE9")
+                widget.setStyleSheet("background-color:#060CE9")
 
 
 class PlayerWidget(QWidget):
@@ -84,8 +84,9 @@ class PlayerWidget(QWidget):
 
     def update(self, score):
         self.score = score
-        self.score_label.setText(f"${self.player.score}")
         if score < 0:
+            self.score_label.setText(f"${self.player.score}")
             self.score_label.setStyleSheet("color: red;")
         else:
+            self.score_label.setText(f"-${abs(self.player.score)}")
             self.score_label.setStyleSheet("color: white;")

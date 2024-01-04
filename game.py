@@ -50,17 +50,10 @@ class GameState:
         self.curr_player = 0
         self.wager_mode = False
         self.answer_timer = None
-        self.sounds = {
-                'daily_double': "resources/sounds/daily-double.mp3",
-                'final_jep': "resources/sounds/final-jep.mp3",
-                'jeopardy_theme': "resources/sounds/jeopardy-theme.mp3",
-                'times_up': "resources/sounds/times-up.mp3"
-                      }
         self.load_clues()
         self.assign_daily_double()
 
     def load_clues(self):
-        print("Loading clues...")
         with open('clues.json') as cluefile:
             clues = json.load(cluefile)
         rounds = []
@@ -82,11 +75,17 @@ class GameState:
             rounds.append(r)
         self.game_data = GameData(rounds)
 
+    def get_round_data(self):
+        return self.game_data.rounds[self.curr_round]
+
     def get_clue_data(self, category, clue):
         return (self.game_data
                 .rounds[self.curr_round]
                 .categories[category]
                 .clues[clue])
+
+    def get_winner(self):
+        return Player()
 
     def check_next_round(self):
         if all(all(clue.answered for clue in category) for category in
@@ -94,7 +93,6 @@ class GameState:
             self.curr_round += 1
             if self.curr_round >= 3:
                 return False
-            self.get_round_data(self.round)
             if self.curr_round < 2:
                 self.assign_daily_double()
             return True
@@ -142,6 +140,8 @@ class GameState:
         while assigned < self.curr_round+1:
             rand_i = random.randint(2, 4)
             rand_j = random.randint(0, 5)
+            print(self.curr_round)
+            print(len(self.game_data.rounds))
             if (rand_j != used_col and
                not self.game_data.rounds[self.curr_round].
                     categories[rand_i].clues[rand_j].daily_double):

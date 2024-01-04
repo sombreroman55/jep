@@ -30,10 +30,10 @@ class MainArea(QStackedWidget):
         self.initUI()
 
     def initUI(self):
-        self.board_view = BoardView(self.root, self, self.game_state)
-        self.clue_view = ClueView(self.root, self, self.game_state)
-        self.final_jep_view = FinalJepView(self.root, self, self.game_state)
-        self.winner_view = WinnerView(self.root, self, self.game_state)
+        self.board_view = BoardView(self.controller)
+        self.clue_view = ClueView(self.controller)
+        self.final_jep_view = FinalJepView(self.controller)
+        self.winner_view = WinnerView(self.controller)
         card_images = ["resources/img/jeopardy.jpg",
                        "resources/img/double-jeopardy.png",
                        "resources/img/daily-double.png",

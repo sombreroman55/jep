@@ -19,7 +19,7 @@ class View(QMainWindow):
         self.root_widget = QWidget(self)
         self.layout = QVBoxLayout()
         self.main_area = MainArea(self, self.controller)
-        self.player_bar = PlayerBarWidget(self, self.root_widget, self.model)
+        self.player_bar = PlayerBarWidget(self.controller)
         self.layout.addWidget(self.main_area, 80)
         self.layout.addWidget(self.player_bar, 20)
         self.root_widget.setStyleSheet("background-color: black;")
@@ -37,5 +37,4 @@ class View(QMainWindow):
     def keyPressEvent(self, event):
         s = event.key()
         if s == Qt.Key.Key_Q.value:
-            self.model.exit_game()
-        self.update()
+            self.controller.handle_exit_game()

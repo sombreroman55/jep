@@ -3,36 +3,29 @@
 # Clue view for the stack window
 from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QFontDatabase, QFont
-
-# TODO: Update event handlers to use buttons for score adjustment
 
 
 class ClueView(QWidget):
-    def __init__(self, root, parent, model):
+    def __init__(self, controller):
         super().__init__()
-        self.root = root
-        self.parent = parent
-        self.model = model
+        self.controller = controller
         self.clue = None
         self.initUI()
 
     def initUI(self):
         self.layout = QVBoxLayout()
-        font_db = QFontDatabase()
-        font_db.addApplicationFont("./resources/fonts/korina-bold.ttf")
-        font = QFont("Korinna", 48)
+        font = self.controller.get_font("korina", 48)
 
         self.q_label = QLabel()
         self.q_label.setFont(font)
         self.q_label.setStyleSheet("color: white;")
-        self.q_label.setAlignment(Qt.AlignCenter)
+        self.q_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.q_label.setWordWrap(True)
 
         self.a_label = QLabel()
         self.a_label.setFont(font)
         self.a_label.setStyleSheet("color: white;")
-        self.a_label.setAlignment(Qt.AlignCenter)
+        self.a_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.a_label.setWordWrap(True)
 
         self.layout.addWidget(self.q_label)
@@ -47,7 +40,6 @@ class ClueView(QWidget):
         self.q_label.setText(self.clue.question)
         self.a_label.setText("A: " + self.clue.answer)
         self.q_label.show()
-        self.model.reset_timer()
 
     def show_answer(self):
         self.q_label.show()
@@ -55,50 +47,3 @@ class ClueView(QWidget):
 
     def update(self):
         pass  # Nothing to update in clue view
-
-    def keyPressEvent(self, event):
-        s = event.text()
-        if not self.model.wager_mode:
-            if s == ' ':
-                self.show_answer()
-            elif event.key() == Qt.Key_Escape:
-                self.model.mark_answered()
-                self.parent.show_board()
-                self.root.update()
-            elif s.isdigit():
-                if 1 <= int(s) <= len(self.model.players):
-                    self.model.curr_player = int(s)-1
-            elif s == 'k':
-                self.model.correct_answer()
-                self.root.update()
-            elif s == 'j':
-                self.model.incorrect_answer()
-                self.root.update()
-            elif s == 'w':
-                print('wager on')
-                self.model.wager_mode = True
-                self.parent.setStyleSheet('border: 3px solid red')
-            elif s == '!':
-                self.model.reset_score()
-                self.root.update()
-            elif s == 'q':
-                self.model.exit_game()
-        else:
-            if s == ' ':
-                self.show_answer()
-            elif s.isdigit():
-                self.model.update_wager(int(s))
-            elif s == 'k':
-                self.model.correct_wager()
-                self.root.update()
-            elif s == 'j':
-                self.model.incorrect_wager()
-                self.root.update()
-            elif s == 'c':
-                self.model.reset_wager()
-            elif s == 'w':
-                print('wager off')
-                self.model.wager_mode = False
-                self.parent.setStyleSheet('')
-            elif s == 'q':
-                self.model.exit_game()

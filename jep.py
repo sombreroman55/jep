@@ -5,12 +5,14 @@
 import subprocess
 from game import GameState
 from view import View
+from fonts import FontManager
 from threading import Timer
 from PyQt6.QtWidgets import QApplication
 
 
 class Jep:
     def __init__(self):
+        self.fonts = FontManager()
         self.round = 1
         self.curr_player = 0
         self.curr_clue_row = 0
@@ -34,8 +36,17 @@ class Jep:
         # TODO: Update game state and UI elements
         pass
 
+    def get_font(self, font, point_size):
+        return self.fonts.get_custom_font(font, point_size)
+
+    def get_round_data(self):
+        return self.model.get_round_data()
+
     def get_clue_data(self, category, clue):
         return self.model.get_clue_data(category, clue)
+
+    def get_winner(self):
+        return self.model.get_winner()
 
     def update_player_name(self, player, name):
         self.players[player].name = name
@@ -46,6 +57,9 @@ class Jep:
                 player.last = True
             else:
                 player.last = False
+
+    def handle_correct_button_press(self):
+        pass
 
     def correct_answer(self, player, value):
         self.players[player].score += value
@@ -80,6 +94,6 @@ class Jep:
     def play_sound(self, sound):
         self.sound_process = subprocess.Popen(["mpv", self.sounds[sound]])
 
-    def exit_game(self):
+    def handle_exit_game(self):
         self.clear_timer()
         QApplication.quit()
