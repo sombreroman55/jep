@@ -6,17 +6,17 @@ from PyQt6.QtCore import Qt
 
 
 class FinalJepView(QWidget):
-    def __init__(self, controller):
+    def __init__(self, state):
         super().__init__()
-        self.controller = controller
+        self.game_state = state
         self.showing_cat = True
         self.initUI()
 
     def initUI(self):
         self.layout = QVBoxLayout()
-        cat_font = self.controller.get_font("swiss911", 54)
-        clue_font = self.controller.get_font("korina", 48)
-        round = self.controller.get_round_data()
+        cat_font = self.game_state.get_font("swiss911", 54)
+        clue_font = self.game_state.get_font("korina", 48)
+        round = self.game_state.get_round_data()
 
         self.c_label = QLabel(round.categories[0].title)
         self.c_label.setFont(cat_font)
@@ -63,7 +63,7 @@ class FinalJepView(QWidget):
         pass
 
     def update(self):
-        round = self.controller.get_round_data()
+        round = self.game_state.get_round_data()
         self.c_label.setText(round.categories[0].title)
         self.q_label.setText(round.categories[0].clues[0].question)
         self.a_label.setText(round.categories[0].clues[0].answer)

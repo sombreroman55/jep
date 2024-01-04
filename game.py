@@ -4,6 +4,9 @@
 
 import json
 import random
+from threading import Timer
+from fonts import FontManager
+from PyQt6.QtMultimedia import QSoundEffect
 
 
 class Clue:
@@ -45,6 +48,7 @@ class Player:
 
 class GameState:
     def __init__(self):
+        self.fonts = FontManager()
         self.players = [Player() for _ in range(3)]
         self.curr_round = 0
         self.curr_player = 0
@@ -52,6 +56,12 @@ class GameState:
         self.answer_timer = None
         self.load_clues()
         self.assign_daily_double()
+        self.sounds = {
+                'daily_double': "resources/sounds/daily-double.mp3",
+                'final_jep': "resources/sounds/final-jep.mp3",
+                'jeopardy_theme': "resources/sounds/jeopardy-theme.mp3",
+                'times_up': "resources/sounds/times-up.mp3"
+                }
 
     def load_clues(self):
         with open('clues.json') as cluefile:
@@ -75,6 +85,12 @@ class GameState:
             rounds.append(r)
         self.game_data = GameData(rounds)
 
+    def play_sound(self, sound):
+        QSoundEffect.play(self.sounds[sound])
+
+    def get_font(self, font, point_size):
+        return self.fonts.get_custom_font(font, point_size)
+
     def get_round_data(self):
         return self.game_data.rounds[self.curr_round]
 
@@ -88,7 +104,7 @@ class GameState:
         return Player()
 
     def check_next_round(self):
-        if all(all(clue.answered for clue in category) for category in
+        if all(all(clue.answered for clue in category.clues) for category in
                self.game_data.rounds[self.curr_round].categories):
             self.curr_round += 1
             if self.curr_round >= 3:
@@ -136,6 +152,17 @@ class GameState:
 
     def reset_score(self, player):
         self.players[player].score = 0
+
+    def reset_timer(self):
+        self.clear_timer()
+        self.answer_timer = Timer(30, self.play_sound, args=['times_up'])
+        self.answer_timer.daemon = True
+        self.answer_timer.start()
+
+    def clear_timer(self):
+        if self.answer_timer:
+            self.answer_timer.cancel()
+        self.answer_timer = None
 
     def assign_daily_double(self):
         assigned = 0

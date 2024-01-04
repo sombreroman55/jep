@@ -11,19 +11,19 @@ from PyQt6.QtWidgets import (
     )
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
-import game
 
 
 class BoardView(QWidget):
-    def __init__(self, controller):
+    def __init__(self, parent, state):
         super().__init__()
-        self.controller = controller
+        self.parent = parent
+        self.game_state = state
         self.initUI()
 
     def initUI(self):
         self.layout = QGridLayout()
-        font = self.controller.get_font("swiss911", 54)
-        round = self.controller.get_round_data()
+        font = self.game_state.get_font("swiss911", 54)
+        round = self.game_state.get_round_data()
         self.category_labels = [None] * len(round.categories)
         for i, category in enumerate(round.categories):
             p = (0, i)
@@ -48,8 +48,8 @@ class BoardView(QWidget):
                 button = QPushButton(f"${clue.value}")
                 button.setFont(font)
                 button.setStyleSheet("color: #FFCC00;")
-                # button.clicked.connect(
-                        # partial(self.parent.show_clue, i, j))
+                button.clicked.connect(
+                        partial(self.parent.show_clue, i, j))
                 button.setSizePolicy(QSizePolicy.Policy.Expanding,
                                      QSizePolicy.Policy.Expanding)
                 self.layout.addWidget(button, *p)
@@ -59,7 +59,7 @@ class BoardView(QWidget):
         self.show()
 
     def update(self):
-        round = self.controller.get_round_data()
+        round = self.game_state.get_round_data()
         for i, category in enumerate(round.categories):
             self.category_labels[i].setText(category.title)
         for i, category in enumerate(round.categories):

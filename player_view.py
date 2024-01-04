@@ -18,15 +18,15 @@ from PyQt6.QtCore import Qt
 # TODO: Adjust the score handlers to use the wager amount in DD situations
 
 class PlayerBarWidget(QWidget):
-    def __init__(self, controller):
+    def __init__(self, state):
         super().__init__()
-        self.controller = controller
+        self.game_state = state
         self.initUI()
 
     def initUI(self):
         self.layout = QHBoxLayout()
         self.player_widgets = []
-        players = self.controller.get_players()
+        players = self.game_state.get_players()
         for i, player in enumerate(players):
             pw = PlayerWidget(player)
             pw.name_label.editingFinished.connect(
@@ -37,7 +37,7 @@ class PlayerBarWidget(QWidget):
         self.show()
 
     def update_name(self, player):
-        self.controller.update_player_name(
+        self.game_state.update_player_name(
                 player, self.player_widgets[player].name_label.text())
 
     def update(self):

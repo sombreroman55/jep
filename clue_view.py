@@ -6,15 +6,19 @@ from PyQt6.QtCore import Qt
 
 
 class ClueView(QWidget):
-    def __init__(self, controller):
+    def __init__(self, parent, state):
         super().__init__()
-        self.controller = controller
+        self.parent = parent
+        self.game_state = state
+        self.category = -1
+        self.clue_num = -1
         self.clue = None
+        self.showing_answer = False
         self.initUI()
 
     def initUI(self):
         self.layout = QVBoxLayout()
-        font = self.controller.get_font("korina", 48)
+        font = self.game_state.get_font("korina", 48)
 
         self.q_label = QLabel()
         self.q_label.setFont(font)
@@ -34,8 +38,10 @@ class ClueView(QWidget):
         self.setStyleSheet("background-color:#060CE9;")
         self.show()
 
-    def set_clue(self, clue):
-        self.clue = clue
+    def set_clue(self, category, clue_num, clue_data):
+        self.category = category
+        self.clue_num = clue_num
+        self.clue = clue_data
         self.a_label.hide()
         self.q_label.setText(self.clue.question)
         self.a_label.setText("A: " + self.clue.answer)
@@ -47,3 +53,13 @@ class ClueView(QWidget):
 
     def update(self):
         pass  # Nothing to update in clue view
+
+    def mousePressEvent(self, event):
+        if not self.showing_answer:
+            self.show_answer()
+            self.showing_answer = True
+        else:
+            self.showing_answer = False
+            self.game_state.mark_answered(self.category, self.clue_num)
+            self.parent.show_board()
+        self.parent.update_root()

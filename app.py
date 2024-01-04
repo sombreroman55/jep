@@ -4,14 +4,16 @@
 import sys
 
 from PyQt6.QtWidgets import QApplication
-from jep import Jep
+from game import GameState
+from view import View
 
 
 def main():
     print("Welcome to Jep!")
     app = QApplication(sys.argv)
-    jep = Jep()
-    jep.play()
+    game_state = GameState()
+    view = View(game_state)
+    view.show()
     sys.exit(app.exec())
 
 
