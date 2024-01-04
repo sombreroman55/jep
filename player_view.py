@@ -13,11 +13,9 @@ from PyQt6.QtGui import QLineEdit, QPushButton
 # TODO: Adjust the score handlers to use the wager amound in DD situations
 
 class PlayerBarWidget(QWidget):
-    def __init__(self, root, parent, model):
+    def __init__(self, controller):
         super().__init__()
-        self.root = root
-        self.parent = parent
-        self.model = model
+        self.controller = controller
         self.initUI()
 
     def initUI(self):

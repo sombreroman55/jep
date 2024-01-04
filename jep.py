@@ -1,6 +1,6 @@
-# game.py
+# jep.py
 #
-# Game state data and functions for Jep
+# The C in the MVC
 
 from dataclasses import dataclass
 import sys
@@ -8,6 +8,7 @@ import json
 import random
 import subprocess
 from view import View
+from game import GameState
 from threading import Timer
 from PyQt6.QtWidgets import QApplication
 
@@ -45,7 +46,7 @@ class Player:
 
 class Jep:
     def __init__(self):
-        self.load_clues()
+        # self.load_clues()
         self.players = [Player() for _ in range(3)]
         self.round = 1
         self.curr_player = 0
@@ -65,7 +66,8 @@ class Jep:
                       }
 
     def play(self):
-        self.view = View()
+        self.model = GameState()
+        self.view = View(self)
 
     def load_clues(self):
         with open('clues.json') as cluefile:

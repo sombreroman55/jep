@@ -42,7 +42,7 @@ class Player:
     score: int = 0
 
 
-class Jep:
+class GameState:
     def __init__(self):
         self.load_clues()
         self.players = [Player() for _ in range(3)]

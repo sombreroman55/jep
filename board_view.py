@@ -8,7 +8,7 @@ from PyQt6.QtGui import QFont, QFontDatabase
 import game
 
 
-class CategoryView(QWidget):
+class BoardView(QWidget):
     def __init__(self, root, parent, model):
         super().__init__()
         self.root = root

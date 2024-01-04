@@ -4,7 +4,7 @@
 import sys
 
 from PyQt6.QtWidgets import QApplication
-from game import Jep
+from jep import Jep
 
 
 def main():

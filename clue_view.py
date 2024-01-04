@@ -61,7 +61,7 @@ class ClueView(QWidget):
                 self.show_answer()
             elif event.key() == Qt.Key_Escape:
                 self.model.mark_answered()
-                self.parent.show_categories()
+                self.parent.show_board()
                 self.root.update()
             elif s.isdigit():
                 if 1 <= int(s) <= len(self.model.players):
