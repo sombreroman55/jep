@@ -34,10 +34,10 @@ class MainArea(QStackedWidget):
         self.clue_view = ClueView(self.controller)
         self.final_jep_view = FinalJepView(self.controller)
         self.winner_view = WinnerView(self.controller)
-        card_images = ["resources/img/jeopardy.jpg",
-                       "resources/img/double-jeopardy.png",
-                       "resources/img/daily-double.png",
-                       "resources/img/final-jeopardy.jpg"]
+        card_images = ["./resources/img/jeopardy.jpg",
+                       "./resources/img/double-jeopardy.png",
+                       "./resources/img/daily-double.png",
+                       "./resources/img/final-jeopardy.jpg"]
 
         self.addWidget(self.board_view)
         self.addWidget(self.clue_view)
@@ -48,7 +48,7 @@ class MainArea(QStackedWidget):
             self.addWidget(widget)
 
         self.setStyleSheet("background-color: black;")
-        self.show_board()
+        self.setCurrentIndex(self.stack_idx[self.curr_view])
         self.show()
 
     def init_image_card(self, image_path):
@@ -95,46 +95,13 @@ class MainArea(QStackedWidget):
         self.final_jep_view.update()
         self.winner_view.update()
 
-    def keyPressEvent(self, event):
-        s = event.text()
-        if s == 'n':
-            if (self.curr_view == "jeopardy-card" or
-                    self.curr_view == "double-jeopardy-card"):
-                self.show_board()
-            elif self.curr_view == "double-jeopardy-card":
-                self.curr_view = "clue"
-            elif self.curr_view == "final-jeopardy-card":
-                self.show_final_jep()
-                self.game_state.play_sound('final_jep')
-            self.setCurrentIndex(self.stack_idx[self.curr_view])
-        elif s == 'q':
-            self.game_state.exit_game()
-        else:
-            if not self.game_state.wager_mode:
-                if s.isdigit():
-                    if 1 <= int(s) <= len(self.game_state.players):
-                        self.game_state.curr_player = int(s)-1
-                elif s == 'k':
-                    self.game_state.correct_answer()
-                    self.root.update()
-                elif s == 'j':
-                    self.game_state.incorrect_answer()
-                    self.root.update()
-                elif s == 'w':
-                    self.game_state.wager_mode = True
-                elif s == '!':
-                    self.game_state.reset_score()
-                    self.root.update()
-            else:
-                if s.isdigit():
-                    self.game_state.update_wager(int(s))
-                elif s == 'k':
-                    self.game_state.correct_wager()
-                    self.root.update()
-                elif s == 'j':
-                    self.game_state.incorrect_wager()
-                    self.root.update()
-                elif s == 'c':
-                    self.game_state.reset_wager()
-                elif s == 'w':
-                    self.game_state.wager_mode = False
+    def mousePressEvent(self, event):
+        if (self.curr_view == "jeopardy-card" or
+                self.curr_view == "double-jeopardy-card"):
+            self.show_board()
+        elif self.curr_view == "double-jeopardy-card":
+            self.curr_view = "clue"
+        elif self.curr_view == "final-jeopardy-card":
+            self.show_final_jep()
+            # self.game_state.play_sound('final_jep')
+        self.setCurrentIndex(self.stack_idx[self.curr_view])

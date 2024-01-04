@@ -37,7 +37,7 @@ class PlayerBarWidget(QWidget):
         self.show()
 
     def update_name(self, player):
-        self.model.update_player_name(
+        self.controller.update_player_name(
                 player, self.player_widgets[player].name_label.text())
 
     def update(self):
@@ -60,12 +60,12 @@ class PlayerWidget(QWidget):
         self.layout = QVBoxLayout()
 
         self.subtract_button = QPushButton("-")
-        self.score_label = QLabel(f"${self.score}")
+        self.score_label = QLabel(f"${self.player.score}")
         self.add_button = QPushButton("+")
         score_font = self.score_label.font()
         score_font.setPointSize(32)
         self.score_label.setFont(score_font)
-        self.score_label.setAlignment(Qt.AlignmentFlags.AlignCenter)
+        self.score_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.score_label.setStyleSheet("color: white;")
 
         self.name_label = QLineEdit()
@@ -73,7 +73,7 @@ class PlayerWidget(QWidget):
         name_font.setPointSize(32)
         self.name_label.setFont(name_font)
         self.name_label.setText(self.player.name)
-        self.name_label.setAlignment(Qt.AlignmentFlags.AlignCenter)
+        self.name_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.name_label.setStyleSheet("color: white;")
 
         self.layout.addWidget(self.score_label)
@@ -83,7 +83,7 @@ class PlayerWidget(QWidget):
         self.show()
 
     def update(self, score):
-        self.score = score
+        self.player.score = score
         if score < 0:
             self.score_label.setText(f"${self.player.score}")
             self.score_label.setStyleSheet("color: red;")

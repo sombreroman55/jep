@@ -105,6 +105,9 @@ class GameState:
             .clues[clue].mark_answered()
         self.clear_timer()
 
+    def get_players(self):
+        return self.players
+
     def update_player_name(self, player, name):
         self.players[player].name = name
 
@@ -138,11 +141,9 @@ class GameState:
         assigned = 0
         used_col = -1
         while assigned < self.curr_round+1:
-            rand_i = random.randint(2, 4)
-            rand_j = random.randint(0, 5)
-            print(self.curr_round)
-            print(len(self.game_data.rounds))
-            if (rand_j != used_col and
+            rand_i = random.randint(0, 5)
+            rand_j = random.randint(2, 4)
+            if (rand_i != used_col and
                not self.game_data.rounds[self.curr_round].
                     categories[rand_i].clues[rand_j].daily_double):
                 self.game_data\

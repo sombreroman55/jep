@@ -44,7 +44,7 @@ class BoardView(QWidget):
                                for i in range(len(round.categories))]
         for i, category in enumerate(round.categories):
             for j, clue in enumerate(category.clues):
-                p = (i+1, j)
+                p = (j+1, i)
                 button = QPushButton(f"${clue.value}")
                 button.setFont(font)
                 button.setStyleSheet("color: #FFCC00;")

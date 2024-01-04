@@ -33,8 +33,3 @@ class View(QMainWindow):
         new_round = self.model.check_next_round()
         self.main_area.update(new_round)
         self.player_bar.update()
-
-    def keyPressEvent(self, event):
-        s = event.key()
-        if s == Qt.Key.Key_Q.value:
-            self.controller.handle_exit_game()

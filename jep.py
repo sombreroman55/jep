@@ -13,13 +13,7 @@ from PyQt6.QtWidgets import QApplication
 class Jep:
     def __init__(self):
         self.fonts = FontManager()
-        self.round = 1
-        self.curr_player = 0
-        self.curr_clue_row = 0
-        self.curr_clue_col = 0
         self.wager_mode = False
-        self.base_clue_value = 200 * self.round
-        self.curr_clue_value = self.curr_clue_row * self.base_clue_value
         self.answer_timer = None
         self.sounds = {
                 'daily_double': "resources/sounds/daily-double.mp3",
@@ -45,11 +39,14 @@ class Jep:
     def get_clue_data(self, category, clue):
         return self.model.get_clue_data(category, clue)
 
+    def get_players(self):
+        return self.model.get_players()
+
     def get_winner(self):
         return self.model.get_winner()
 
     def update_player_name(self, player, name):
-        self.players[player].name = name
+        self.model.update_player_name(player, name)
 
     def set_last_player(self):
         for player in self.players:
