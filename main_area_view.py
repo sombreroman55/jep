@@ -12,11 +12,10 @@ from final_jep_view import FinalJepView, WinnerView
 
 
 class MainArea(QStackedWidget):
-    def __init__(self, root, parent, game_state):
+    def __init__(self, root, controller):
         super().__init__()
         self.root = root
-        self.parent = parent
-        self.game_state = game_state
+        self.controller = controller
         self.curr_view = "jeopardy-card"
         self.stack_idx = {
             "board": 0,
@@ -64,15 +63,11 @@ class MainArea(QStackedWidget):
         self.curr_view = "board"
         self.setCurrentIndex(self.stack_idx[self.curr_view])
 
-    def show_clue(self, i, j):
-        self.game_state.curr_clue_row = i
-        self.game_state.curr_clue_col = j
-        self.game_state.curr_clue_value = \
-            (self.game_state.curr_clue_row+1) * self.game_state.base_clue_value
-        self.clue_view.populate_clue(self.game_state.clues[i][j].question,
-                                     self.game_state.clues[i][j].answer)
-        if self.game_state.clues[i][j].daily_double:
-            self.game_state.play_sound('daily_double')
+    def show_clue(self, category, clue):
+        clue = self.controller.get_clue_data(category, clue)
+        self.clue_view.set_clue(clue)
+        if clue.daily_double:
+            # self.game_state.play_sound('daily_double')
             self.curr_view = "daily-double-card"
             self.setCurrentIndex(self.stack_idx[self.curr_view])
         else:

@@ -2,15 +2,21 @@
 #
 # The widget for viewing the player
 from functools import partial
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QVBoxLayout
+from PyQt6.QtWidgets import (
+        QHBoxLayout,
+        QLabel,
+        QLineEdit,
+        QPushButton,
+        QVBoxLayout,
+        QWidget,
+    )
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QLineEdit, QPushButton
 
 
 # TODO: Add +/- buttons to adjust score with mouse
 # TODO: Hook those buttons up to handlers to adjust score
 # TODO: Add a wager mode UI to the player currently wagering and the amount
-# TODO: Adjust the score handlers to use the wager amound in DD situations
+# TODO: Adjust the score handlers to use the wager amount in DD situations
 
 class PlayerBarWidget(QWidget):
     def __init__(self, controller):

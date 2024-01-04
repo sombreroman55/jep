@@ -2,8 +2,8 @@
 #
 # Category view for the stack window
 from functools import partial
-from PyQt6.QtWidgets import QWidget, QLabel, QPushButton
-from PyQt6.QtCore import Qt, QGridLayout
+from PyQt6.QtWidgets import QWidget, QLabel, QPushButton, QGridLayout
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont, QFontDatabase
 import game
 

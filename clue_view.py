@@ -14,6 +14,7 @@ class ClueView(QWidget):
         self.root = root
         self.parent = parent
         self.model = model
+        self.clue = None
         self.initUI()
 
     def initUI(self):
@@ -40,10 +41,11 @@ class ClueView(QWidget):
         self.setStyleSheet("background-color:#060CE9;")
         self.show()
 
-    def populate_clue(self, question, answer):
+    def set_clue(self, clue):
+        self.clue = clue
         self.a_label.hide()
-        self.q_label.setText(question)
-        self.a_label.setText("A: " + answer)
+        self.q_label.setText(self.clue.question)
+        self.a_label.setText("A: " + self.clue.answer)
         self.q_label.show()
         self.model.reset_timer()
 

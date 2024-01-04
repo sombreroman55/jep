@@ -2,52 +2,15 @@
 #
 # The C in the MVC
 
-from dataclasses import dataclass
-import sys
-import json
-import random
 import subprocess
-from view import View
 from game import GameState
+from view import View
 from threading import Timer
 from PyQt6.QtWidgets import QApplication
-
-# TODO: Add/remove players dynamically
-
-
-@dataclass
-class Round:
-    def __init__(self):
-        self.categories = []
-
-
-@dataclass
-class Category:
-    def __init__(self, title):
-        self.title = title
-        self.clues = []
-
-
-@dataclass
-class Clue:
-    def __init__(self, question, answer):
-        self.question = question
-        self.answer = answer
-        self.media = None
-        self.daily_double = False
-        self.answered = False
-
-
-@dataclass
-class Player:
-    name: str = ""
-    score: int = 0
 
 
 class Jep:
     def __init__(self):
-        # self.load_clues()
-        self.players = [Player() for _ in range(3)]
         self.round = 1
         self.curr_player = 0
         self.curr_clue_row = 0
@@ -55,57 +18,24 @@ class Jep:
         self.wager_mode = False
         self.base_clue_value = 200 * self.round
         self.curr_clue_value = self.curr_clue_row * self.base_clue_value
-        self.initialize_clues(self.round)
-        self.assign_daily_double()
         self.answer_timer = None
         self.sounds = {
                 'daily_double': "resources/sounds/daily-double.mp3",
                 'final_jep': "resources/sounds/final-jep.mp3",
                 'jeopardy_theme': "resources/sounds/jeopardy-theme.mp3",
                 'times_up': "resources/sounds/times-up.mp3"
-                      }
+                }
 
     def play(self):
         self.model = GameState()
         self.view = View(self)
 
-    def load_clues(self):
-        with open('clues.json') as cluefile:
-            self.clues = json.load(cluefile)
-            print(self.clues)
-            sys.exit(1)
-
     def update_state(self):
         # TODO: Update game state and UI elements
         pass
 
-    def get_round_data(self, r):
-        self.categories = self.data.get_cats_for_round(r)
-        qdata = self.data.get_questions_for_round(r)
-        adata = self.data.get_answers_for_round(r)
-        if self.round < 3:
-            self.clues = [[Clue(qdata[i][j], adata[i][j])
-                           for j in range(6)] for i in range(5)]
-        else:
-            self.clues = [[Clue(qdata[i][j], adata[i][j])
-                           for j in range(1)] for i in range(1)]
-
-    def check_next_round(self):
-        clear = [[x.answered for x in row] for row in self.clues]
-        if all(all(row) for row in clear):
-            self.round += 1
-            if self.round >= 4:
-                return
-            self.get_round_data(self.round)
-            if self.round < 3:
-                self.base_clue_value = 200 * self.round
-                self.assign_daily_double()
-            return True
-        return False
-
-    def mark_answered(self):
-        self.clues[self.curr_clue_row][self.curr_clue_col].answered = True
-        self.clear_timer()
+    def get_clue_data(self, category, clue):
+        return self.model.get_clue_data(category, clue)
 
     def update_player_name(self, player, name):
         self.players[player].name = name
@@ -149,18 +79,6 @@ class Jep:
 
     def play_sound(self, sound):
         self.sound_process = subprocess.Popen(["mpv", self.sounds[sound]])
-
-    def assign_daily_double(self):
-        assigned = 0
-        used_col = -1
-        while assigned < self.round:
-            rand_i = random.randint(2, 4)
-            rand_j = random.randint(0, 5)
-            if (rand_j != used_col and
-               not self.clues[rand_i][rand_j].daily_double):
-                self.clues[rand_i][rand_j].daily_double = True
-                used_col = rand_j
-                assigned += 1
 
     def exit_game(self):
         self.clear_timer()
