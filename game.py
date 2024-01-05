@@ -32,7 +32,7 @@ class SoundManager:
                 'daily_double': "resources/sounds/daily-double.wav",
                 'final_jep': "resources/sounds/final-jep.wav",
                 'jeopardy_theme': "resources/sounds/jeopardy-theme.wav",
-                'times_up': "resources/sounds/times-up.wav"
+                'opening': "resources/sounds/opening.wav"
                 }
         self.sound = None
 
@@ -87,6 +87,7 @@ class GameState:
         self.fonts = FontManager()
         self.sounds = SoundManager()
         self.players = [Player() for _ in range(4)]
+        self.players[0].last = True
         self.curr_round = 0
         self.curr_player = 0
         self.wager_mode = False

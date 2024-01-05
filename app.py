@@ -13,6 +13,7 @@ def main():
     app = QApplication(sys.argv)
     game_state = GameState()
     view = View(game_state)
+    view.update()
     view.show()
     sys.exit(app.exec())
 

@@ -1,15 +1,17 @@
 # final_jep_view.py
 #
 # Clue view for the stack window
+from PyQt6.QtCore import QTimer
 from PyQt6.QtWidgets import QVBoxLayout, QWidget, QLabel
 from PyQt6.QtCore import Qt
 
 
 class FinalJepView(QWidget):
-    def __init__(self, state):
+    def __init__(self, parent, state):
         super().__init__()
+        self.parent = parent
         self.game_state = state
-        self.showing_cat = True
+        self.showing = 0  # 0 - category, 1 - Q, 2 - A
         self.initUI()
 
     def initUI(self):
@@ -48,19 +50,17 @@ class FinalJepView(QWidget):
         self.c_label.show()
         self.q_label.hide()
         self.a_label.hide()
-        pass
 
     def show_clue(self):
+        self.music_timer = QTimer.singleShot(8000, self.play_music)
         self.c_label.hide()
         self.q_label.show()
         self.a_label.hide()
-        pass
 
     def show_answer(self):
         self.c_label.hide()
         self.q_label.show()
         self.a_label.show()
-        pass
 
     def update(self):
         round = self.game_state.get_round_data()
@@ -68,27 +68,32 @@ class FinalJepView(QWidget):
         self.q_label.setText(round.categories[0].clues[0].question)
         self.a_label.setText(round.categories[0].clues[0].answer)
 
+    def play_music(self):
+        self.game_state.play_sound("jeopardy_theme")
+
     def mousePressEvent(self, event):
-        if not self.showing_answer:
+        if self.showing == 0:
+            self.showing = 1
+            self.show_clue()
+        elif self.showing == 1:
+            self.showing = 2
             self.show_answer()
-            self.showing_answer = True
-        else:
-            self.showing_answer = False
-            self.game_state.mark_answered(self.category, self.clue_num)
-            self.parent.show_board()
+        elif self.showing == 2:
+            self.parent.show_winner()
         self.parent.update_root()
 
 
 class WinnerView(QWidget):
-    def __init__(self, controller):
+    def __init__(self, parent, state):
         super().__init__()
-        self.controller = controller
-        self.winner = self.controller.get_winner()
+        self.parent = parent
+        self.game_state = state
+        self.winner = self.game_state.get_winner()
         self.initUI()
 
     def initUI(self):
         self.layout = QVBoxLayout()
-        winner_font = self.controller.get_font("korina", 56)
+        winner_font = self.game_state.get_font("korina", 56)
 
         self.winner_label = QLabel(
                 f"{self.winner.name} is the winner with ${self.winner.score}!")
@@ -103,5 +108,6 @@ class WinnerView(QWidget):
         self.show()
 
     def update(self):
+        self.winner = self.game_state.get_winner()
         self.winner_label.setText(
                 f"{self.winner.name} is the winner with ${self.winner.score}!")

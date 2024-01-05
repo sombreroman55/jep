@@ -32,8 +32,8 @@ class MainArea(QStackedWidget):
     def initUI(self):
         self.board_view = BoardView(self, self.game_state)
         self.clue_view = ClueView(self, self.game_state)
-        self.final_jep_view = FinalJepView(self.game_state)
-        self.winner_view = WinnerView(self.game_state)
+        self.final_jep_view = FinalJepView(self, self.game_state)
+        self.winner_view = WinnerView(self, self.game_state)
         card_images = ["./resources/img/jeopardy.jpg",
                        "./resources/img/double-jeopardy.png",
                        "./resources/img/daily-double.png",
@@ -49,6 +49,7 @@ class MainArea(QStackedWidget):
 
         self.setStyleSheet("background-color: black;")
         self.setCurrentIndex(self.stack_idx[self.curr_view])
+        self.game_state.play_sound('opening')
         self.show()
 
     def init_image_card(self, image_path):
@@ -77,6 +78,7 @@ class MainArea(QStackedWidget):
             self.root.set_clue_value(clue_data.value)
 
     def show_final_jep(self):
+        self.game_state.play_sound('final_jep')
         self.curr_view = "final-jep"
         self.root.all_wager()
         self.setCurrentIndex(self.stack_idx[self.curr_view])
@@ -111,5 +113,4 @@ class MainArea(QStackedWidget):
             self.curr_view = "clue"
         elif self.curr_view == "final-jeopardy-card":
             self.show_final_jep()
-            self.game_state.play_sound('final_jep')
         self.setCurrentIndex(self.stack_idx[self.curr_view])
