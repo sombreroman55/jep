@@ -44,11 +44,10 @@ class SoundManager:
 
 
 class Clue:
-    def __init__(self, q, a, val, media):
+    def __init__(self, q, a, val):
         self.question = q
         self.answer = a
         self.value = val
-        self.media = media
         self.answered = False
         self.daily_double = False
 
@@ -108,8 +107,7 @@ class GameState:
                     q = clue["q"]
                     a = clue["a"]
                     val = clue["value"]
-                    media = clue["media"]
-                    c = Clue(q, a, val, media)
+                    c = Clue(q, a, val)
                     clues.append(c)
                 c = Category(title, clues)
                 categories.append(c)
