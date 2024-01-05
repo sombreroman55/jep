@@ -18,7 +18,7 @@ class View(QMainWindow):
         self.root_widget = QWidget(self)
         self.layout = QVBoxLayout()
         self.main_area = MainArea(self, self.game_state)
-        self.player_bar = PlayerBarWidget(self.game_state)
+        self.player_bar = PlayerBarWidget(self, self.game_state)
         self.layout.addWidget(self.main_area, 80)
         self.layout.addWidget(self.player_bar, 20)
         self.root_widget.setStyleSheet("background-color: black;")
@@ -26,6 +26,15 @@ class View(QMainWindow):
         self.setCentralWidget(self.root_widget)
         self.root_widget.show()
         self.showFullScreen()
+
+    def player_wager(self):
+        self.player_bar.player_wager()
+
+    def set_clue_value(self, value):
+        self.player_bar.set_clue_value(value)
+
+    def all_wager(self):
+        self.player_bar.all_wager()
 
     def update(self):
         # new_round = self.model.check_next_round()

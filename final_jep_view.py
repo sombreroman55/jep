@@ -68,6 +68,16 @@ class FinalJepView(QWidget):
         self.q_label.setText(round.categories[0].clues[0].question)
         self.a_label.setText(round.categories[0].clues[0].answer)
 
+    def mousePressEvent(self, event):
+        if not self.showing_answer:
+            self.show_answer()
+            self.showing_answer = True
+        else:
+            self.showing_answer = False
+            self.game_state.mark_answered(self.category, self.clue_num)
+            self.parent.show_board()
+        self.parent.update_root()
+
 
 class WinnerView(QWidget):
     def __init__(self, controller):

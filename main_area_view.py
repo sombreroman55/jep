@@ -67,27 +67,34 @@ class MainArea(QStackedWidget):
         clue_data = self.game_state.get_clue_data(category, clue)
         self.clue_view.set_clue(category, clue, clue_data)
         if clue_data.daily_double:
-            # self.game_state.play_sound('daily_double')
+            self.game_state.play_sound('daily_double')
             self.curr_view = "daily-double-card"
             self.setCurrentIndex(self.stack_idx[self.curr_view])
+            self.root.player_wager()
         else:
             self.curr_view = "clue"
             self.setCurrentIndex(self.stack_idx[self.curr_view])
+            self.root.set_clue_value(clue_data.value)
 
     def show_final_jep(self):
         self.curr_view = "final-jep"
+        self.root.all_wager()
         self.setCurrentIndex(self.stack_idx[self.curr_view])
 
     def show_winner(self):
         self.curr_view = "winner"
         self.setCurrentIndex(self.stack_idx[self.curr_view])
 
+    def show_card(self, card):
+        self.curr_view = card
+        self.setCurrentIndex(self.stack_idx[self.curr_view])
+
     def update(self, is_next_round):
         if is_next_round:
             if self.game_state.curr_round == 1:
-                self.show_card(self.DJ_CARD)
+                self.show_card("double-jeopardy-card")
             elif self.game_state.curr_round == 2:
-                self.show_card(self.FJ_CARD)
+                self.show_card("final-jeopardy-card")
         self.board_view.update()
         self.clue_view.update()
         self.final_jep_view.update()
@@ -100,9 +107,9 @@ class MainArea(QStackedWidget):
         if (self.curr_view == "jeopardy-card" or
                 self.curr_view == "double-jeopardy-card"):
             self.show_board()
-        elif self.curr_view == "double-jeopardy-card":
+        elif self.curr_view == "daily-double-card":
             self.curr_view = "clue"
         elif self.curr_view == "final-jeopardy-card":
             self.show_final_jep()
-            # self.game_state.play_sound('final_jep')
+            self.game_state.play_sound('final_jep')
         self.setCurrentIndex(self.stack_idx[self.curr_view])

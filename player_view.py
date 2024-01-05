@@ -1,7 +1,6 @@
 # player_view.py
 #
 # The widget for viewing the player
-from functools import partial
 from PyQt6.QtWidgets import (
         QHBoxLayout,
         QLabel,
@@ -13,13 +12,10 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt
 
 
-# TODO: Hook those buttons up to handlers to adjust score
-# TODO: Add a wager mode UI to the player currently wagering and the amount
-# TODO: Adjust the score handlers to use the wager amount in DD situations
-
 class PlayerBarWidget(QWidget):
-    def __init__(self, state):
+    def __init__(self, root, state):
         super().__init__()
+        self.root = root
         self.game_state = state
         self.initUI()
 
@@ -28,40 +24,72 @@ class PlayerBarWidget(QWidget):
         self.player_widgets = []
         players = self.game_state.get_players()
         for i, player in enumerate(players):
-            pw = PlayerWidget(player)
-            pw.name_label.editingFinished.connect(
-                        partial(self.update_name, i))
+            pw = PlayerWidget(self, player, i, self.game_state)
+            pw.name_label.editingFinished.connect(lambda: self.update_name(i))
             self.player_widgets.append(pw)
             self.layout.addWidget(pw)
         self.setLayout(self.layout)
         self.show()
+
+    def set_clue_value(self, value):
+        for p in self.player_widgets:
+            p.set_clue_value(value)
+
+    def player_wager(self):
+        players = self.game_state.get_players()
+        for i, p in enumerate(players):
+            if p.last:
+                self.player_widgets[i].player_wager()
+
+    def all_wager(self):
+        for p in self.player_widgets:
+            p.player_wager()
+
+    def update_root(self):
+        self.root.update()
 
     def update_name(self, player):
         self.game_state.update_player_name(
                 player, self.player_widgets[player].name_label.text())
 
     def update(self):
-        for widget in self.player_widgets:
-            # widget.update(self.model.players[i].score)
-            widget.update(0)
-            if widget.last:
-                widget.setStyleSheet("background-color:#068CE9")
-            else:
-                widget.setStyleSheet("background-color:#060CE9")
+        players = self.game_state.get_players()
+        for i, player in enumerate(players):
+            self.player_widgets[i].update(player)
 
 
 class PlayerWidget(QWidget):
-    def __init__(self, player):
+    def __init__(self, parent, player, idx, state):
         super().__init__()
-        self.player = player
-        self.initUI()
+        self.parent = parent
+        self.game_state = state
+        self.index = idx
+        self.initUI(player)
 
-    def initUI(self):
+    def initUI(self, player):
         self.layout = QVBoxLayout()
 
+        self.adjust_bar = QWidget()
+        self.adjust_layout = QHBoxLayout()
         self.subtract_button = QPushButton("-")
-        self.score_label = QLabel(f"${self.player.score}")
+        self.value_label = QLineEdit("")
+        value_font = self.value_label.font()
+        value_font.setPointSize(24)
+        self.value_label.setFont(value_font)
+        self.value_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.value_label.setStyleSheet("color: white;")
         self.add_button = QPushButton("+")
+        self.adjust_layout.addWidget(self.subtract_button, 15)
+        self.adjust_layout.addWidget(self.value_label, 70)
+        self.adjust_layout.addWidget(self.add_button, 15)
+        self.adjust_bar.setLayout(self.adjust_layout)
+        self.subtract_button.clicked.connect(
+                lambda: self.incorrect_answer())
+
+        self.add_button.clicked.connect(
+                lambda: self.correct_answer())
+
+        self.score_label = QLabel(f"${player.score}")
         score_font = self.score_label.font()
         score_font.setPointSize(32)
         self.score_label.setFont(score_font)
@@ -72,21 +100,44 @@ class PlayerWidget(QWidget):
         name_font = self.name_label.font()
         name_font.setPointSize(32)
         self.name_label.setFont(name_font)
-        self.name_label.setText(self.player.name)
+        self.name_label.setText(player.name)
         self.name_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.name_label.setStyleSheet("color: white;")
 
+        self.layout.addWidget(self.adjust_bar)
         self.layout.addWidget(self.score_label)
         self.layout.addWidget(self.name_label)
         self.setStyleSheet("background-color:#060CE9;")
         self.setLayout(self.layout)
         self.show()
 
-    def update(self, score):
-        self.player.score = score
-        if score < 0:
-            self.score_label.setText(f"${self.player.score}")
-            self.score_label.setStyleSheet("color: red;")
+    def correct_answer(self):
+        self.game_state.correct_answer(
+                self.index, int(self.value_label.text()))
+        self.parent.update_root()
+
+    def incorrect_answer(self):
+        self.game_state.incorrect_answer(
+                self.index, int(self.value_label.text()))
+        self.parent.update_root()
+
+    def player_wager(self):
+        self.value_label.setText(str(""))
+        self.value_label.setEnabled(True)
+
+    def set_clue_value(self, value):
+        self.value_label.setText(str(value))
+        self.value_label.setEnabled(False)
+
+    def update(self, player):
+        if player.last:
+            self.setStyleSheet("background-color:#068CE9")
         else:
-            self.score_label.setText(f"-${abs(self.player.score)}")
+            self.setStyleSheet("background-color:#060CE9")
+
+        if player.score >= 0:
+            self.score_label.setText(f"${player.score}")
             self.score_label.setStyleSheet("color: white;")
+        else:
+            self.score_label.setText(f"-${abs(player.score)}")
+            self.score_label.setStyleSheet("color: red;")

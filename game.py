@@ -4,9 +4,43 @@
 
 import json
 import random
-from threading import Timer
-from fonts import FontManager
+from PyQt6.QtCore import QUrl
 from PyQt6.QtMultimedia import QSoundEffect
+from PyQt6.QtGui import QFont, QFontDatabase
+
+
+class FontManager:
+    def __init__(self):
+        self.fonts = {
+            "swiss911": "./resources/fonts/swiss-911.ttf",
+            "korina": "./resources/fonts/korina-bold.ttf"
+        }
+        self.font_ids = {}
+
+        for k, v in self.fonts.items():
+            font_id = QFontDatabase.addApplicationFont(v)
+            self.font_ids[k] = font_id
+
+    def get_custom_font(self, font, point_size):
+        font = QFontDatabase.applicationFontFamilies(self.font_ids[font])[0]
+        return QFont(font, point_size)
+
+
+class SoundManager:
+    def __init__(self):
+        self.sounds = {
+                'daily_double': "resources/sounds/daily-double.wav",
+                'final_jep': "resources/sounds/final-jep.wav",
+                'jeopardy_theme': "resources/sounds/jeopardy-theme.wav",
+                'times_up': "resources/sounds/times-up.wav"
+                }
+        self.sound = None
+
+    def play_sound(self, sound):
+        self.sound = QSoundEffect()
+        self.sound.setSource(QUrl.fromLocalFile(self.sounds[sound]))
+        self.sound.setLoopCount(1)
+        self.sound.play()
 
 
 class Clue:
@@ -42,26 +76,23 @@ class GameData:
 
 
 class Player:
-    name: str = ""
-    score: int = 0
+    def __init__(self):
+        self.name = ""
+        self.score = 0
+        self.last = False
 
 
 class GameState:
     def __init__(self):
         self.fonts = FontManager()
-        self.players = [Player() for _ in range(3)]
+        self.sounds = SoundManager()
+        self.players = [Player() for _ in range(4)]
         self.curr_round = 0
         self.curr_player = 0
         self.wager_mode = False
         self.answer_timer = None
         self.load_clues()
         self.assign_daily_double()
-        self.sounds = {
-                'daily_double': "resources/sounds/daily-double.mp3",
-                'final_jep': "resources/sounds/final-jep.mp3",
-                'jeopardy_theme': "resources/sounds/jeopardy-theme.mp3",
-                'times_up': "resources/sounds/times-up.mp3"
-                }
 
     def load_clues(self):
         with open('clues.json') as cluefile:
@@ -86,7 +117,7 @@ class GameState:
         self.game_data = GameData(rounds)
 
     def play_sound(self, sound):
-        QSoundEffect.play(self.sounds[sound])
+        self.sounds.play_sound(sound)
 
     def get_font(self, font, point_size):
         return self.fonts.get_custom_font(font, point_size)
@@ -101,7 +132,9 @@ class GameState:
                 .clues[clue])
 
     def get_winner(self):
-        return Player()
+        winner = max(range(len(self.players)),
+                     key=lambda i: self.players[i].score)
+        return self.players[winner]
 
     def check_next_round(self):
         if all(all(clue.answered for clue in category.clues) for category in
@@ -119,7 +152,6 @@ class GameState:
             .rounds[self.curr_round]\
             .categories[category]\
             .clues[clue].mark_answered()
-        self.clear_timer()
 
     def get_players(self):
         return self.players
@@ -127,42 +159,19 @@ class GameState:
     def update_player_name(self, player, name):
         self.players[player].name = name
 
-    def set_last_player(self):
-        for player in self.players:
-            if player == self.players[self.curr_player]:
-                player.last = True
+    def set_last_player(self, player):
+        for i, p in enumerate(self.players):
+            if player == i:
+                p.last = True
             else:
-                player.last = False
+                p.last = False
 
     def correct_answer(self, player, value):
         self.players[player].score += value
-        self.set_last_player()
-        self.clear_timer()
+        self.set_last_player(player)
 
     def incorrect_answer(self, player, value):
         self.players[player].score -= value
-        self.reset_timer()
-
-    def reset_wager(self, player):
-        self.players[self.curr_player].wager = 0
-
-    def update_wager(self, digit):
-        self.players[self.curr_player].wager *= 10
-        self.players[self.curr_player].wager += digit
-
-    def reset_score(self, player):
-        self.players[player].score = 0
-
-    def reset_timer(self):
-        self.clear_timer()
-        self.answer_timer = Timer(30, self.play_sound, args=['times_up'])
-        self.answer_timer.daemon = True
-        self.answer_timer.start()
-
-    def clear_timer(self):
-        if self.answer_timer:
-            self.answer_timer.cancel()
-        self.answer_timer = None
 
     def assign_daily_double(self):
         assigned = 0
